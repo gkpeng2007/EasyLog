@@ -8,6 +8,7 @@
 int main()
 {
 #if 1	
+	//Log写入测试
 	int i = 0;
 	for(; i < 200; i++)
 	{		
@@ -18,6 +19,7 @@ int main()
 		//EasyLog(1, L"Hello", 1000, L"Main", L"Filter", L"Hello, World! %d", 100);
 	}
 #else 
+	//Log读取测试，可以在LogWatch工程验证
 	std::ifstream inf(_T("D:\\Log.elog"), std::ios::binary);
 	CEasySerialize ia(inf);
 	for(;;)
@@ -33,7 +35,6 @@ int main()
 			break;
 		}
 	}
-#endif
-	
+#endif	
 	return 0;
 }

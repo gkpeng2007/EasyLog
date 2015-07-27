@@ -119,15 +119,16 @@ void CLogWatchDlg::InitCtrl()
 	//ListView for Log
 	m_lstLog.SetExtendedStyle(m_lstLog.GetExtendedStyle() | LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER);
 	m_lstLog.ModifyStyle(0, LVS_SINGLESEL);
-	m_lstLog.InsertColumn(0, _T("Time"), LVCFMT_LEFT, 130);
-	m_lstLog.InsertColumn(1, _T("PID"), LVCFMT_LEFT, 50);	
-	m_lstLog.InsertColumn(2, _T("TID"), LVCFMT_LEFT, 50);
-	m_lstLog.InsertColumn(3, _T("Filter"), LVCFMT_LEFT, 80);
-	m_lstLog.InsertColumn(4, _T("File"), LVCFMT_LEFT, 80);
-	m_lstLog.InsertColumn(5, _T("Line"), LVCFMT_LEFT, 50);
-	m_lstLog.InsertColumn(6, _T("Function"), LVCFMT_LEFT, 80);	
-	m_lstLog.InsertColumn(7, _T("Text"), LVCFMT_LEFT, 350);
-	m_lstLog.InsertColumn(8, _T("Level"), LVCFMT_LEFT, 80);
+	m_lstLog.InsertColumn(1, _T("Seq"), LVCFMT_LEFT, 50);
+	m_lstLog.InsertColumn(2, _T("Level"), LVCFMT_LEFT, 60);
+	m_lstLog.InsertColumn(3, _T("Time"), LVCFMT_LEFT, 130);
+	m_lstLog.InsertColumn(4, _T("PID"), LVCFMT_LEFT, 50);	
+	m_lstLog.InsertColumn(5, _T("TID"), LVCFMT_LEFT, 50);
+	m_lstLog.InsertColumn(6, _T("Filter"), LVCFMT_LEFT, 80);
+	m_lstLog.InsertColumn(7, _T("File"), LVCFMT_LEFT, 80);
+	m_lstLog.InsertColumn(8, _T("Line"), LVCFMT_LEFT, 50);
+	m_lstLog.InsertColumn(9, _T("Function"), LVCFMT_LEFT, 80);	
+	m_lstLog.InsertColumn(10, _T("Text"), LVCFMT_LEFT, 350);	
 }
 
 VOID CLogWatchDlg::InsertLogItem(CSwapData& data)
@@ -136,18 +137,22 @@ VOID CLogWatchDlg::InsertLogItem(CSwapData& data)
 	CTime ts(data.ts);
 	CString strTime = ts.Format(_T("%Y-%m-%d %H:%M:%S"));
 	CString strLine; strLine.Format(_T("%d"), data.line);
-	int nRow = m_lstLog.InsertItem(m_lstLog.GetItemCount(), strTime);
+	CString strSeq; strSeq.Format(_T("%d"), m_lstLog.GetItemCount());
+	int nRow = m_lstLog.InsertItem(m_lstLog.GetItemCount(), strSeq);
 
 	CString strPid; strPid.Format(_T("%d"), data.pid);
 	CString strTid; strTid.Format(_T("%d"), data.tid);
-	m_lstLog.SetItemText(nRow, 1, strPid);
-	m_lstLog.SetItemText(nRow, 2, strTid);
-	m_lstLog.SetItemText(nRow, 3, data.filter);		
-	m_lstLog.SetItemText(nRow, 4, data.file);
-	m_lstLog.SetItemText(nRow, 5, strLine);
-	m_lstLog.SetItemText(nRow, 6, data.function);
-	m_lstLog.SetItemText(nRow, 7, data.content);
-	m_lstLog.SetItemText(nRow, 8, szLevel[data.level < 3 ? data.level : 0]);
+	
+	m_lstLog.SetItemText(nRow, 1, szLevel[data.level < 3 ? data.level : 0]);
+	m_lstLog.SetItemText(nRow, 2, strTime);
+	m_lstLog.SetItemText(nRow, 3, strPid);
+	m_lstLog.SetItemText(nRow, 4, strTid);
+	m_lstLog.SetItemText(nRow, 5, data.filter);		
+	m_lstLog.SetItemText(nRow, 6, data.file);
+	m_lstLog.SetItemText(nRow, 7, strLine);
+	m_lstLog.SetItemText(nRow, 8, data.function);
+	m_lstLog.SetItemText(nRow, 9, data.content);
+	
 		
 	//选中最后一个
 	if(m_bScrollToEnd)
@@ -216,11 +221,6 @@ BOOL CLogWatchDlg::OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct)
 void CLogWatchDlg::OnFileOpenlogfile()
 {
 	// TODO: Add your command handler code here	
-#ifdef _DEBUG
-	ReadFile(CString("D:\\log.elog"), m_vecLogData);
-	LoadData(m_vecLogData);
-	return;
-#endif
 	CFileDialog dlgFile(TRUE, _T( "elog" ), NULL, OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, _T( "EasyLog|*.elog" ));
 	dlgFile.DoModal();
 	CString strFile = dlgFile.GetPathName();
@@ -250,24 +250,28 @@ void CLogWatchDlg::ReadFile(CString& strFile, std::vector<CLogData>& vecLogData)
 void CLogWatchDlg::LoadData(std::vector<CLogData>& vecLogData)
 {
 	m_lstLog.DeleteAllItems();
+	int seq = 1;
 	for(auto iter = vecLogData.begin(); iter != vecLogData.end(); ++iter)
 	{
 		CLogData& data = *iter;
 		CTime ts(data.ts);
 		CString strTime = ts.Format(_T("%Y-%m-%d %H:%M:%S"));
 		CString strLine; strLine.Format(_T("%d"), data.line);
-		int nRow = m_lstLog.InsertItem(m_lstLog.GetItemCount(), strTime);
+		CString strSeq; strSeq.Format(_T("%d"), seq++);
+		int nRow = m_lstLog.InsertItem(m_lstLog.GetItemCount(), strSeq);
 
 		CString strPid; strPid.Format(_T("%d"), data.pid);
 		CString strTid; strTid.Format(_T("%d"), data.tid);
-		m_lstLog.SetItemText(nRow, 1, strPid);
-		m_lstLog.SetItemText(nRow, 2, strTid);
-		m_lstLog.SetItemText(nRow, 3, data.filter.c_str());		
-		m_lstLog.SetItemText(nRow, 4, data.file.c_str());
-		m_lstLog.SetItemText(nRow, 5, strLine);
-		m_lstLog.SetItemText(nRow, 6, data.function.c_str());
-		m_lstLog.SetItemText(nRow, 7, data.content.c_str());
-		m_lstLog.SetItemText(nRow, 8, szLevel[data.level < 3 ? data.level : 0]);
+		
+		m_lstLog.SetItemText(nRow, 1, szLevel[data.level < 3 ? data.level : 0]);
+		m_lstLog.SetItemText(nRow, 2, strTime);
+		m_lstLog.SetItemText(nRow, 3, strPid);
+		m_lstLog.SetItemText(nRow, 4, strTid);
+		m_lstLog.SetItemText(nRow, 5, data.filter.c_str());		
+		m_lstLog.SetItemText(nRow, 6, data.file.c_str());
+		m_lstLog.SetItemText(nRow, 7, strLine);
+		m_lstLog.SetItemText(nRow, 8, data.function.c_str());
+		m_lstLog.SetItemText(nRow, 9, data.content.c_str());		
 	}
 }
 
@@ -287,7 +291,7 @@ void CLogWatchDlg::OnNMClickList1(NMHDR *pNMHDR, LRESULT *pResult)
 	if(sel >= 0 && sel < m_lstLog.GetItemCount())
 	{
 		wchar_t szContent[MAX_CONTENT] = {0};
-		m_lstLog.GetItemText(sel, 7, szContent, MAX_CONTENT);
+		m_lstLog.GetItemText(sel, 9, szContent, MAX_CONTENT);
 		m_edtContent.SetWindowText(szContent);
 	}
 	
