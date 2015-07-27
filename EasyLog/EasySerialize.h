@@ -1,9 +1,7 @@
 #pragma once
 #include <fstream>
-
-//#define SEGMENT_MAX   1024*10  //10K字节应该很大了
-
 #define CHAR_SIZE 2
+
 /**
  ** @brief	简单的序列化工具
  ** @author	gkpeng
@@ -68,7 +66,7 @@ public:
 	template<class T>
 	void operator&(T& rValue)
 	{
-		//这里需要判断是序列化还是反序列化
+		//这里通过文件判断是序列化还是反序列化
 		if(m_pfIn)
 		{
 			m_pfIn->read((char*)&rValue, sizeof T);

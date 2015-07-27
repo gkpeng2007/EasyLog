@@ -15,10 +15,10 @@ m_oarchive(m_logfile),
 m_hObservr(NULL),
 m_hWnd(NULL)
 {
-	/**初始化做的几件事：
-	 * 1）获取当前进程ID
-	 * 2）创建存储文件 
-	 *
+	/** 初始化做的几件事：
+	 ** 1）获取当前进程ID
+	 ** 2）创建存储文件 
+	 ** ...
 	 **/
 	m_lPid = ::GetCurrentProcessId();
 		
@@ -40,6 +40,7 @@ LRESULT CALLBACK WindowProcc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case EASYLOG_SET_WND_MSG:
 		{
 			CLog::GetInstance().m_hObservr = (HWND)lParam;
+			//告知LogWatch，Attach成功了
 			::SendMessage((HWND)wParam, EASYLOG_SET_WND_RESPONE, NULL, NULL);
 		}
 		break;	
@@ -158,14 +159,13 @@ int CLog::GetLevel()
 void CLog::Log(CLogData& data)
 {
 	g_cnt++;
-	static time_t ts = 0;
-	data.pid = CLog::GetInstance().m_lPid;
+	static time_t ts = 0;	
 	time(&ts); data.ts = ts;
-
+	data.pid = CLog::GetInstance().m_lPid;
 	//保存至文件
 	m_oarchive<<data;
 
-	//如果被Attach了，那就通知下吧
+	//如果被Attach了，那就发送数据给LogWatch
 	if(m_hObservr)
 	{		
 		CSwapData d2(data.ts, data.line, data.pid, data.tid, data.level, data.file.c_str(), data.filter.c_str(), data.content.c_str(), data.function.c_str());

@@ -17,18 +17,9 @@
 #define EASYLOG_LOG_MSG			WM_USER + 1003
 #define EASYLOG_CLOSE_WND		WM_USER + 1020
 
-
-#define MAX_COMMAND_LINE_SIZE   256
-
-/**
- ** @brief	Unicode支持
- ** @date	2015/7
- **/
-#ifdef UNICODE
-	typedef std::wstring	String;	
-#else
-	typedef std::string		String;
-#endif
+#define MAX_COMMAND_LINE_SIZE			256
+#define MAX_FILE_FILTER_FUNCTION		100
+#define MAX_CONTENT						256
 
 enum LOGLEVEL
 {
@@ -36,11 +27,9 @@ enum LOGLEVEL
 	LOG_FINAL = 2,
 };
 
-#define MAX_FILE_FILTER_FUNCTION	100
-#define MAX_CONTENT					256
-
 /**
  ** @brief	WM_COPYDATA 貌似对可变长的字符串支持的不是很好，于是写了一个字符串数组版本的CLogData ^_^
+ ** @todo	对内容的size，目前的256是偏小
  ** @date	2015/7
  **/
 class CSwapData
@@ -80,7 +69,6 @@ public:
 	wchar_t	filter[MAX_FILE_FILTER_FUNCTION];
 	wchar_t	content[MAX_CONTENT];
 	wchar_t	function[MAX_FILE_FILTER_FUNCTION];
-
 };
 
 class CLogData
