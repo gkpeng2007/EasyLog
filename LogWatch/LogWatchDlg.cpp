@@ -30,6 +30,7 @@ void CLogWatchDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_LIST1, m_lstLog);
 	DDX_Control(pDX, IDC_EDIT1, m_edtContent);
+	DDX_Control(pDX, IDC_LIST4, m_lstFilter);
 }
 
 BEGIN_MESSAGE_MAP(CLogWatchDlg, CDialogEx)
@@ -111,7 +112,7 @@ void CLogWatchDlg::OnSize(UINT nType, int cx, int cy)
 	if(m_lstLog.m_hWnd)
 		m_lstLog.MoveWindow(175, 10, cx - 175, cy - 10);	
 	if(m_edtContent.m_hWnd)
-		m_edtContent.MoveWindow(10, 420, 160, cy - 425);
+		m_edtContent.MoveWindow(10, 300, 160, cy - 305);
 }
 
 void CLogWatchDlg::InitCtrl()
@@ -129,6 +130,16 @@ void CLogWatchDlg::InitCtrl()
 	m_lstLog.InsertColumn(8, _T("Line"), LVCFMT_LEFT, 50);
 	m_lstLog.InsertColumn(9, _T("Function"), LVCFMT_LEFT, 80);	
 	m_lstLog.InsertColumn(10, _T("Text"), LVCFMT_LEFT, 350);	
+
+	//ListView for filter
+	m_lstFilter.SetExtendedStyle(m_lstFilter.GetExtendedStyle() | LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER | LVS_EX_CHECKBOXES);
+	m_lstFilter.ModifyStyle(0, LVS_SINGLESEL);
+	m_lstFilter.InsertColumn(1, _T("Filter"), LVCFMT_LEFT, 150);
+
+	int nRow = m_lstFilter.InsertItem(m_lstFilter.GetItemCount(), L"Test");
+#ifdef _DEBUG
+	int nRow = m_lstFilter.InsertItem(m_lstFilter.GetItemCount(), L"FinalLog");
+#endif
 }
 
 VOID CLogWatchDlg::InsertLogItem(CSwapData& data)

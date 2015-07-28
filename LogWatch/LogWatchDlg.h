@@ -55,4 +55,5 @@ public:
 	afx_msg void OnBnClickedButton6();
 	CEdit m_edtContent;
 	afx_msg void OnNMClickList1(NMHDR *pNMHDR, LRESULT *pResult);
+	CListCtrl m_lstFilter;
 };
